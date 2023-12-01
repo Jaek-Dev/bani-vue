@@ -1,45 +1,143 @@
-**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
+# Bani Vue Payment Widget
 
-When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
+The Bani Vue Payment Widget is a convenient and user-friendly payment solution for web applications. It enables businesses to easily accept payments through various channels such as mobile money, cryptocurrency, bank transfers, and third-party wallets. With just a few simple steps, you can integrate this widget into your application and start accepting payments securely.
 
-*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video](https://youtu.be/0ocf7u76WSo) for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
 
----
+### Installation
+You can install the Bani Vue Payment Widget using npm or yarn. Use the following command to install the package:
 
-## Edit a file
+**Please note that this plugin currently support only vue 3.x**
+```bash
+# install using npm
+npm install bani-vue
 
-You’ll start by editing this README file to learn how to edit a file in Bitbucket.
+# or with yarn
+yarn add bani-vue
+```
 
-1. Click **Source** on the left side.
-2. Click the README.md link from the list of files.
-3. Click the **Edit** button.
-4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*
-5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you’ll see the change you just made.
-6. Go back to the **Source** page.
+### Plugin Registration
+```js
+/**
+ * In your application entry file
+ * main.js or app.js or main.ts or app.ts
+ */
+import { createApp } from 'vue';
+import { BaniVue } from 'bani-vue';
 
----
+const app = createApp({});
 
-## Create a file
+// Registration here
+app.use(BaniVue);
+```
 
-Next, you’ll add a new file to this repository.
 
-1. Click the **New file** button at the top of the **Source** page.
-2. Give the file a filename of **contributors.txt**.
-3. Enter your name in the empty file space.
-4. Click **Commit** and then **Commit** again in the dialog.
-5. Go back to the **Source** page.
+The plugin can be used in 2 ways:
+1. Directly inside the template
+2. Using composables.
 
-Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
 
----
+#### Example usage with template
+```js
+<script setup>
+import { reactive, ref } from 'vue';
 
-## Clone a repository
+const merchantKey = ref('[YOUR_BANI_PUBLIC_KEY]');
+const form = reactive({
+    amount: '', 
+    phoneNumber: '', // Please refer to Bani's documentation for accepted formats
+    email: '',
+    firstName: '',
+    lastName: ''
+})
+</script>
 
-Use these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first](https://www.sourcetreeapp.com/). If you prefer to clone from the command line, see [Clone a repository](https://confluence.atlassian.com/x/4whODQ).
 
-1. You’ll see the clone button under the **Source** heading. Click that button.
-2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.
-3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you’d like to and then click **Clone**.
-4. Open the directory you just created to see your repository’s files.
+<template>
+    <form @submit.prevent="$bani({
+        ...form, 
+        merchantKey,
+        //Optional properties
+        callback(response) { console.log(response); },
+        onClose(response) { console.log(response); },
+    })">
+        <input type="text" v-model="form.firstName" required />
+        <input type="text" v-model="form.lastName" required />
+        <input type="email" v-model="form.email" required />
+        <input type="tel" v-model="form.phone" required />
+        <input type="number" v-model="form.amount" required />
+        <button>Pay {{ form.amount }}</button>
+    </form>
+</template>
+```
 
-Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
+
+#### Example usage with composable
+```js
+<script setup>
+import { reactive, ref } from 'vue';
+import { useBani } from 'bani-vue';
+
+const merchantKey = ref('[YOUR_BANI_PUBLIC_KEY]');
+const form = reactive({
+    amount: '', 
+    phoneNumber: '', // Please refer to Bani's documentation for accepted formats
+    email: '',
+    firstName: '',
+    lastName: ''
+});
+
+const baniPopup = useBani();
+
+function payWithBani() {
+    baniPopup({
+        ...form, 
+        merchantKey: merchantKey.value,
+        //Optional properties
+        callback(response) {
+            console.log(response);
+        },
+        onClose(response) {
+            console.log(response);
+        },
+    });
+}
+</script>
+
+
+<template>
+    <form @submit.prevent="payWithBani">
+        <input type="text" v-model="form.firstName" required />
+        <input type="text" v-model="form.lastName" required />
+        <input type="email" v-model="form.email" required />
+        <input type="tel" v-model="form.phone" required />
+        <input type="number" v-model="form.amount" required />
+        <button>Pay {{ form.amount }}</button>
+    </form>
+</template>
+```
+
+Please refer to the [bani's documentation](https://docs.getbani.com/bani-pop/initiate-transaction) for more information on available options and customization.
+
+Thousands of businesses of all sizes rely on Bani™ suite of products to receive cardless payments and make payouts seamlessly. Sign up [here](https://bani.africa) to get started.
+
+#### Demo
+
+![demo image](https://res.cloudinary.com/alameen-ak/image/upload/v1686588243/Screenshot_2023-06-12_at_5.42.34_PM_bunfyf.png)
+
+
+
+Please feel free to fork this package and contribute by submitting a pull request to enhance the functionalities.
+
+#### How can I thank you?
+
+Why not star the github repo? I'd love the attention! Why not share the link for this repository on Twitter or HackerNews? Spread the word!
+
+Don't forget to [follow me on Twitter](https://twitter.com/Jaek_Dev)! and also  [follow me on LinkedIn](https://www.linkedin.com/in/Jaek-Dev)!
+
+
+Thanks!
+Jacob Eke.
+
+#### License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
